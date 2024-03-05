@@ -1,0 +1,27 @@
+2024-03-03 14:54:57,046 INFO    MainThread:214914 [wandb_setup.py:_flush():76] Configure stats pid to 214914
+2024-03-03 14:54:57,046 INFO    MainThread:214914 [wandb_setup.py:_flush():76] Loading settings from /global/homes/s/salmab/.config/wandb/settings
+2024-03-03 14:54:57,046 INFO    MainThread:214914 [wandb_setup.py:_flush():76] Loading settings from /global/u2/s/salmab/ARNIQA/wandb/settings
+2024-03-03 14:54:57,046 INFO    MainThread:214914 [wandb_setup.py:_flush():76] Loading settings from environment variables: {}
+2024-03-03 14:54:57,046 INFO    MainThread:214914 [wandb_setup.py:_flush():76] Applying setup settings: {'_disable_service': False}
+2024-03-03 14:54:57,046 INFO    MainThread:214914 [wandb_setup.py:_flush():76] Inferring run settings from compute environment: {'program_relpath': 'main.py', 'program': '/global/u2/s/salmab/ARNIQA/main.py'}
+2024-03-03 14:54:57,046 INFO    MainThread:214914 [wandb_init.py:_log_setup():507] Logging user logs to /global/u2/s/salmab/ARNIQA/wandb/run-20240303_145457-rfcus2v1/logs/debug.log
+2024-03-03 14:54:57,046 INFO    MainThread:214914 [wandb_init.py:_log_setup():508] Logging internal logs to /global/u2/s/salmab/ARNIQA/wandb/run-20240303_145457-rfcus2v1/logs/debug-internal.log
+2024-03-03 14:54:57,046 INFO    MainThread:214914 [wandb_init.py:init():547] calling init triggers
+2024-03-03 14:54:57,047 INFO    MainThread:214914 [wandb_init.py:init():554] wandb.init called with sweep_config: {}
+config: {'experiment_name': 'Third Try', 'device': 0, 'seed': 27, 'data_base_path': PosixPath('/global/cfs/cdirs/cosmo/work/legacysurvey/dr10/survey-ccds-decam-dr10.fits.gz'), 'training': DotMap(epochs=10, lr=0.001, batch_size=16, num_workers=20, log_images_frequency=1000, resume_training=False, data=DotMap(patch_size=224, max_distortions=4, num_levels=5, pristine_prob=0.05), optimizer=DotMap(name='SGD', momentum=0.9, weight_decay=0.0001), lr_scheduler=DotMap(name='CosineAnnealingWarmRestarts', T_0=1, T_mult=2, eta_min=1e-06)), 'validation': DotMap(frequency=1, num_splits=10, alpha=0.1, visualize=True, visualization=DotMap(tsne=DotMap(n_components=3, perplexity=30, n_iter=1000), umap=DotMap(n_components=3, n_neighbors=25, min_dist=0.2, metric='euclidean')), datasets=['live', 'csiq', 'tid2013', 'kadid10k', 'flive', 'spaq']), 'test': DotMap(batch_size=16, num_workers=20, num_splits=10, grid_search=True, alpha=0.1, crop_size=224, datasets=['live', 'csiq', 'tid2013', 'kadid10k', 'flive', 'spaq']), 'model': DotMap(temperature=0.1, encoder=DotMap(embedding_dim=128, pretrained=True, use_norm=True)), 'logging': DotMap(use_wandb=True, wandb=DotMap(online=True, project='test_arniqa', entity='sborchan')), 'checkpoint_base_path': PosixPath('/global/u2/s/salmab/ARNIQA/experiments')}
+2024-03-03 14:54:57,047 INFO    MainThread:214914 [wandb_init.py:init():595] starting backend
+2024-03-03 14:54:57,047 INFO    MainThread:214914 [wandb_init.py:init():599] setting up manager
+2024-03-03 14:54:57,051 INFO    MainThread:214914 [backend.py:_multiprocessing_setup():106] multiprocessing start_methods=fork,spawn,forkserver, using: spawn
+2024-03-03 14:54:57,055 INFO    MainThread:214914 [wandb_init.py:init():605] backend started and connected
+2024-03-03 14:54:57,062 INFO    MainThread:214914 [wandb_init.py:init():695] updated telemetry
+2024-03-03 14:54:57,070 INFO    MainThread:214914 [wandb_init.py:init():732] communicating run to backend with 60.0 second timeout
+2024-03-03 14:54:57,327 INFO    MainThread:214914 [wandb_run.py:_on_init():2176] communicating current version
+2024-03-03 14:54:57,360 INFO    MainThread:214914 [wandb_run.py:_on_init():2185] got version response upgrade_message: "wandb version 0.16.3 is available!  To upgrade, please run:\n $ pip install wandb --upgrade"
+
+2024-03-03 14:54:57,360 INFO    MainThread:214914 [wandb_init.py:init():782] starting run threads in backend
+2024-03-03 14:55:01,342 INFO    MainThread:214914 [wandb_run.py:_console_start():2157] atexit reg
+2024-03-03 14:55:01,343 INFO    MainThread:214914 [wandb_run.py:_redirect():2012] redirect: SettingsConsole.WRAP_RAW
+2024-03-03 14:55:01,344 INFO    MainThread:214914 [wandb_run.py:_redirect():2077] Wrapping output streams.
+2024-03-03 14:55:01,344 INFO    MainThread:214914 [wandb_run.py:_redirect():2102] Redirects installed.
+2024-03-03 14:55:01,345 INFO    MainThread:214914 [wandb_init.py:init():824] run started, returning control to user process
+2024-03-03 14:55:08,255 WARNING MsgRouterThr:214914 [router.py:message_loop():77] message_loop has been closed
