@@ -9,9 +9,8 @@ import numpy as np
 from astropy.io import fits
 from astropy.table import Table
 import os
-from utils.utils_data import distort_images, resize_crop
+from utils.utils_data import distort_decam_images, resize_crop
 from utils.utils import PROJECT_ROOT
-
 
 class DECAMDataset(Dataset):
     """
@@ -33,6 +32,7 @@ class DECAMDataset(Dataset):
             distortion_functions (list): list of the names of the distortion functions applied to the images
             distortion_values (list): list of the values of the distortion functions applied to the images
     """
+
     def __init__(self,
                  root: str,
                  patch_size: int = 224,
@@ -50,32 +50,29 @@ class DECAMDataset(Dataset):
         file_path = "/global/cfs/cdirs/cosmo/work/legacysurvey/dr10/survey-ccds-decam-dr10.fits.gz"
         image_table = Table.read(file_path)
 
+        # List to store paths of selected images
         self.ref_images = []
         self.hdu_numbers = []
 
-        # Iterate over rows in image_table
-        for row in image_table:
-            expnum = row['expnum']
-            image_path = os.path.join(root, row['image_filename'])
-            hdu_number = row['image_hdu']
-
-            if expnum in exp_df['expnum'].values and os.path.exists(image_path):
-                if image_path not in self.ref_images:
-                    self.ref_images.append(image_path)
-                    self.hdu_numbers.append(hdu_number)
+        test = image_table[:400]
+        idx = np.isin(test["expnum"], exp_df["expnum"])
+        matched_exp = test[idx]
+        self.ref_images =  matched_exp["image_filename"]
+        self.hdu_numbers = matched_exp['image_hdu']
 
 
         # Convert paths to Path objects
-        self.ref_images = [Path(path) for path in self.ref_images]
+        self.ref_images = [Path(root,path) for path in self.ref_images]
+
         self.patch_size = patch_size
         self.max_distortions = max_distortions
-        self.normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
         self.num_levels = num_levels
         self.pristine_prob = pristine_prob
 
         assert 0 <= self.max_distortions <= 7, "The parameter max_distortions must be in the range [0, 7]"
         assert 1 <= self.num_levels <= 5, "The parameter num_levels must be in the range [1, 5]"
-
+        
+        
     def __getitem__(self, index: int) -> dict:
         img_A_path = self.ref_images[index]
         hdu_number = self.hdu_numbers[index]
@@ -89,11 +86,9 @@ class DECAMDataset(Dataset):
         img_B = hdul_B[hdu_number].data
         
         # Resize and crop
-        img_A_orig = resize_crop(img_A, self.patch_size)
-        img_B_orig = resize_crop(img_B, self.patch_size)
+        img_A_orig = torch.tensor(img_A[512:1024, 512:1024]).unsqueeze(0)
+        img_B_orig = torch.tensor(img_B[512:1024, 512:1024]).unsqueeze(0)
 
-        img_A_orig = transforms.ToTensor()(img_A_orig)
-        img_B_orig = transforms.ToTensor()(img_B_orig)
 
         distort_functions_A = []
         distort_values_A = []
@@ -102,13 +97,13 @@ class DECAMDataset(Dataset):
 
         # Distort images with (1 - self.pristine_prob) probability for image A
         if random.random() > self.pristine_prob and self.max_distortions > 0:
-            img_A_orig, distort_functions_A, distort_values_A = distort_images(img_A_orig,
+            img_A_orig, distort_functions_A, distort_values_A = distort_decam_images(img_A_orig,
                                                                                  max_distortions=self.max_distortions,
                                                                                  num_levels=self.num_levels)
 
         # Distort images with (1 - self.pristine_prob) probability for image B
         if random.random() > self.pristine_prob and self.max_distortions > 0:
-            img_B_orig, distort_functions_B, distort_values_B = distort_images(img_B_orig,
+            img_B_orig, distort_functions_B, distort_values_B = distort_decam_images(img_B_orig,
                                                                                  max_distortions=self.max_distortions,
                                                                                  num_levels=self.num_levels)
 

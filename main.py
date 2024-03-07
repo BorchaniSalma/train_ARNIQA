@@ -26,7 +26,7 @@ def main():
 
     # Set the device
     if args.device != -1 and torch.cuda.is_available():
-        device = torch.device(f"cuda:{args.device}")
+        device = torch.device("cuda:{}".format(args.device))
     else:
         device = torch.device("cpu")
 
@@ -67,7 +67,7 @@ def main():
         optimizer = torch.optim.SGD(model.parameters(), lr=args.training.lr, momentum=args.training.optimizer.momentum,
                                     weight_decay=args.training.optimizer.weight_decay)
     else:
-        raise NotImplementedError(f"Optimizer {args.training.optimizer.name} not implemented")
+        raise NotImplementedError("Optimizer {} not implemented".format(args.training.optimizer.name))
 
     # Initialize the scheduler
     if "lr_scheduler" in args.training and args.training.lr_scheduler.name == "CosineAnnealingWarmRestarts":
@@ -94,7 +94,7 @@ def main():
             args.training.start_epoch = epoch + 1
             run_id = checkpoint["config"]["logging"]["wandb"].get("run_id", None)
             args.best_srocc = checkpoint["config"]["best_srocc"]
-            print(f"--- Resuming training after epoch {epoch + 1} ---")
+            print("--- Resuming training after epoch {} ---".format(epoch + 1))
         except Exception:
             print("ERROR: Could not resume training. Starting from scratch.")
 
@@ -119,7 +119,7 @@ def main():
     checkpoint = torch.load(checkpoint_path, map_location="cpu")
     model.load_state_dict(checkpoint, strict=True)
     model.to(device)
-    print(f"Starting testing with best checkpoint...")
+    print("Starting testing with best checkpoint...")
 
     test(args, model, logger, device)
     print("--- Testing finished ---")

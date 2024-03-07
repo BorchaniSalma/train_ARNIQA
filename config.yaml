@@ -1,5 +1,5 @@
 # General settings
-experiment_name: "Sixth Try"   # name of the experiment
+experiment_name:  "Failing_Try"   # name of the experiment
 device: 0   # -1 for CPU, otherwise GPU id
 seed: 27  # random seed
 data_base_path: '/global/cfs/cdirs/cosmo/work/legacysurvey/dr10/images'    # path to the base directory containing the datasets

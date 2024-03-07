@@ -1,0 +1,34 @@
+  0%|                                                                                                                                                                               | 0/25 [00:01<?, ?it/s]
+Traceback (most recent call last):                                                                                                                                                  | 0/25 [00:00<?, ?it/s]
+  File "/global/u2/s/salmab/ARNIQA/main.py", line 129, in <module>
+    main()
+  File "/global/u2/s/salmab/ARNIQA/main.py", line 114, in main
+    train(args, model, train_dataloader, optimizer, lr_scheduler, scaler, logger, device)
+  File "/global/u2/s/salmab/ARNIQA/train.py", line 74, in train
+    for i, batch in enumerate(tqdm(train_dataloader)):
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/tqdm/std.py", line 1182, in __iter__
+    for obj in iterable:
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/torch/utils/data/dataloader.py", line 630, in __next__
+    data = self._next_data()
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/torch/utils/data/dataloader.py", line 1345, in _next_data
+    return self._process_data(data)
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/torch/utils/data/dataloader.py", line 1371, in _process_data
+    data.reraise()
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/torch/_utils.py", line 694, in reraise
+    raise exception
+TypeError: Caught TypeError in DataLoader worker process 0.
+Original Traceback (most recent call last):
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/torch/utils/data/_utils/worker.py", line 308, in _worker_loop
+    data = fetcher.fetch(index)
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/torch/utils/data/_utils/fetch.py", line 51, in fetch
+    data = [self.dataset[idx] for idx in possibly_batched_index]
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/torch/utils/data/_utils/fetch.py", line 51, in <listcomp>
+    data = [self.dataset[idx] for idx in possibly_batched_index]
+  File "/global/u2/s/salmab/ARNIQA/data/dataset_decam.py", line 93, in __getitem__
+    img_A_orig = transforms.ToTensor()(img_A_orig)
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/torchvision/transforms/transforms.py", line 137, in __call__
+    return F.to_tensor(pic)
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/torchvision/transforms/functional.py", line 140, in to_tensor
+    raise TypeError(f"pic should be PIL Image or ndarray. Got {type(pic)}")
+TypeError: pic should be PIL Image or ndarray. Got <class 'torch.Tensor'>
+Saving checkpoints in folder:  /global/u2/s/salmab/ARNIQA/experiments/Another_Try/pretrain
