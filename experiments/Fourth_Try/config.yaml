@@ -1,0 +1,75 @@
+checkpoint_base_path: /global/u2/s/salmab/ARNIQA/experiments
+data_base_path: /global/cfs/cdirs/cosmo/work/legacysurvey/dr10/images
+device: 0
+experiment_name: Fourth_Try
+logging:
+  use_wandb: true
+  wandb:
+    entity: sborchan
+    online: true
+    project: arniqa
+    run_id: x45lmdq4
+model:
+  encoder:
+    embedding_dim: 128
+    pretrained: true
+    use_norm: true
+  temperature: 0.1
+seed: 27
+test:
+  alpha: 0.1
+  batch_size: 16
+  crop_size: 224
+  datasets:
+  - live
+  - csiq
+  - tid2013
+  - kadid10k
+  - flive
+  - spaq
+  grid_search: true
+  num_splits: 10
+  num_workers: 20
+training:
+  batch_size: 16
+  data:
+    max_distortions: 4
+    num_levels: 5
+    patch_size: 224
+    pristine_prob: 0.05
+  epochs: 10
+  log_images_frequency: 1000
+  lr: 0.001
+  lr_scheduler:
+    T_0: 1
+    T_mult: 2
+    eta_min: 1.0e-06
+    name: CosineAnnealingWarmRestarts
+  num_workers: 20
+  optimizer:
+    momentum: 0.9
+    name: SGD
+    weight_decay: 0.0001
+  resume_training: false
+validation:
+  alpha: 0.1
+  datasets:
+  - live
+  - csiq
+  - tid2013
+  - kadid10k
+  - flive
+  - spaq
+  frequency: 1
+  num_splits: 10
+  visualization:
+    tsne:
+      n_components: 3
+      n_iter: 1000
+      perplexity: 30
+    umap:
+      metric: euclidean
+      min_dist: 0.2
+      n_components: 3
+      n_neighbors: 25
+  visualize: true

@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/global/u2/s/salmab/ARNIQA/main.py", line 129, in <module>
+    main()
+  File "/global/u2/s/salmab/ARNIQA/main.py", line 114, in main
+    train(args, model, train_dataloader, optimizer, lr_scheduler, scaler, logger, device)
+  File "/global/u2/s/salmab/ARNIQA/train.py", line 44, in train
+    checkpoint_path.mkdir(parents=True, exist_ok=False)
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/pathlib.py", line 1175, in mkdir
+    self._accessor.mkdir(self, mode)
+FileExistsError: [Errno 17] File exists: '/global/u2/s/salmab/ARNIQA/experiments/ARNIQA training exp/pretrain'

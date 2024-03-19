@@ -1,0 +1,128 @@
+wandb_version: 1
+
+experiment_name:
+  desc: null
+  value: Train 3
+device:
+  desc: null
+  value: 0
+seed:
+  desc: null
+  value: 27
+data_base_path:
+  desc: null
+  value: /global/cfs/cdirs/cosmo/work/legacysurvey/dr10/images
+training:
+  desc: null
+  value:
+    epochs: 10
+    lr: 0.001
+    batch_size: 16
+    num_workers: 20
+    log_images_frequency: 1000
+    resume_training: false
+    data:
+      patch_size: 224
+      max_distortions: 4
+      num_levels: 5
+      pristine_prob: 0.05
+    optimizer:
+      name: SGD
+      momentum: 0.9
+      weight_decay: 0.0001
+    lr_scheduler:
+      name: CosineAnnealingWarmRestarts
+      T_0: 1
+      T_mult: 2
+      eta_min: 1.0e-06
+validation:
+  desc: null
+  value:
+    frequency: 1
+    num_splits: 10
+    alpha: 0.1
+    visualize: true
+    visualization:
+      tsne:
+        n_components: 3
+        perplexity: 30
+        n_iter: 1000
+      umap:
+        n_components: 3
+        n_neighbors: 25
+        min_dist: 0.2
+        metric: euclidean
+    datasets:
+    - live
+    - csiq
+    - tid2013
+    - kadid10k
+    - flive
+    - spaq
+test:
+  desc: null
+  value:
+    batch_size: 16
+    num_workers: 20
+    num_splits: 10
+    grid_search: true
+    alpha: 0.1
+    crop_size: 224
+    datasets:
+    - live
+    - csiq
+    - tid2013
+    - kadid10k
+    - flive
+    - spaq
+model:
+  desc: null
+  value:
+    temperature: 0.1
+    encoder:
+      embedding_dim: 128
+      pretrained: true
+      use_norm: true
+logging:
+  desc: null
+  value:
+    use_wandb: true
+    wandb:
+      online: true
+      project: ARNIQA Training
+      entity: sborchan
+checkpoint_base_path:
+  desc: null
+  value: /global/u2/s/salmab/ARNIQA/experiments
+_wandb:
+  desc: null
+  value:
+    python_version: 3.10.13
+    cli_version: 0.15.0
+    framework: torch
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    start_time: 1710569838.825402
+    t:
+      1:
+      - 1
+      - 5
+      - 41
+      - 53
+      - 55
+      - 79
+      2:
+      - 1
+      - 5
+      - 41
+      - 53
+      - 55
+      - 79
+      3:
+      - 13
+      - 16
+      - 23
+      4: 3.10.13
+      5: 0.15.0
+      8:
+      - 5

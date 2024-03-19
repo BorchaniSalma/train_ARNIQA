@@ -49,8 +49,8 @@ class DECAMDataset(Dataset):
         ref_images = ref_images['ref_images'].tolist()
         hdu_numbers = hdu_numbers['hdu_numbers'].tolist()
 
-        self.ref_images = [Path(path) for path in ref_images]
-        self.hdu_numbers = [hdu for hdu in hdu_numbers]
+        self.ref_images = [Path(path) for path in ref_images[:1000]]
+        self.hdu_numbers = [hdu for hdu in hdu_numbers[:1000]]
 
         self.patch_size = patch_size
         self.max_distortions = max_distortions
@@ -64,27 +64,41 @@ class DECAMDataset(Dataset):
     def __getitem__(self, index: int) -> dict:
         img_A_path = self.ref_images[index]
         hdu_number = self.hdu_numbers[index]
-        hdul_A = fits.open(img_A_path)
-        img_A = hdul_A[hdu_number].data
+
+        with fits.open(img_A_path) as hdul_A:
+
+            img_A = hdul_A[hdu_number].data
+            sky_brightness_A = hdul_A[hdu_number].header['SKYBRITE']
+            image_A_subtracted = img_A - float(sky_brightness_A)          
+  
+
         # Select another exposure randomly
         other_exp_index = np.random.choice(np.setdiff1d(range(len(self.ref_images)), [index]))
         img_B_path = self.ref_images[other_exp_index]
-        hdul_B = fits.open(img_B_path)
-        img_B = hdul_B[hdu_number].data
+        while not os.path.exists(img_B_path):
+            other_exp_index = np.random.choice(np.setdiff1d(range(len(self.ref_images)), [index]))
+            img_B_path = self.ref_images[other_exp_index]
         
+
+        with fits.open(img_B_path) as hdul_B:
+
+            img_B = hdul_B[hdu_number].data
+            sky_brightness_B = hdul_B[hdu_number].header['SKYBRITE']
+            image_B_subtracted = img_B - float(sky_brightness_B)
+ 
         # Define the RandomCrop transformation
         random_crop = transforms.RandomCrop(1024)
-        
-        img_A_orig = torch.tensor(img_A).unsqueeze(0)
+
+        img_A_orig = torch.tensor(image_A_subtracted).unsqueeze(0)
 
         # Apply RandomCrop to the original image
         img_A_orig = random_crop(img_A_orig)
-        
-        img_B_orig = torch.tensor(img_B).unsqueeze(0)
+
+        img_B_orig = torch.tensor(image_B_subtracted).unsqueeze(0)
 
         # Apply RandomCrop to the original image
         img_B_orig = random_crop(img_B_orig)        
-        
+
         distort_functions_A = []
         distort_values_A = []
         distort_functions_B = []
@@ -96,6 +110,7 @@ class DECAMDataset(Dataset):
                                                                                  max_distortions=self.max_distortions,
                                                                                  num_levels=self.num_levels)
 
+
         # Use the same distortions for image B
         img_B_orig, distort_functions_B, distort_values_B = distort_decam_images(img_B_orig, distort_functions=distort_functions_A, distort_values=distort_values_A)
 
@@ -103,20 +118,18 @@ class DECAMDataset(Dataset):
         distort_functions_A_names = get_distortion_names(distort_functions_A, li_distort_names)
         distort_functions_B_names = get_distortion_names(distort_functions_B, li_distort_names)
 
+
         # Pad to make the length of distort_functions and distort_values equal for all samples
         distort_functions_A_names += [""] * (self.max_distortions - len(distort_functions_A_names))
         distort_values_A += [torch.inf] * (self.max_distortions - len(distort_values_A))
 
         distort_functions_B_names += [""] * (self.max_distortions - len(distort_functions_B_names))
         distort_values_B += [torch.inf] * (self.max_distortions - len(distort_values_B))
+        
+        img_A_orig = img_A_orig + float(sky_brightness_A)  
+        img_B_orig = img_B_orig + float(sky_brightness_B)
 
-       
-
-        return {
-            "img_A_orig": img_A_orig,"img_B_orig": img_B_orig,
-            "distortion_functions_A": distort_functions_A, "distortion_values_A": distort_values_A,
-            "distortion_functions_B": distort_functions_B, "distortion_values_B": distort_values_B
-        }
+        return {"img_A_orig": img_A_orig, "img_B_orig": img_B_orig, "img_A_name": "A", "img_B_name": "B", "distortion_functions": distort_functions_A_names, "distortion_values": distort_values_A}
 
     
     def __len__(self) -> int:

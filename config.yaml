@@ -1,5 +1,5 @@
 # General settings
-experiment_name:  "Failing_Try"   # name of the experiment
+experiment_name:  "Train arniqa 3"   # name of the experiment
 device: 0   # -1 for CPU, otherwise GPU id
 seed: 27  # random seed
 data_base_path: '/global/cfs/cdirs/cosmo/work/legacysurvey/dr10/images'    # path to the base directory containing the datasets
@@ -59,7 +59,7 @@ validation:
 
 # Test
 test:
-  batch_size: 16    # batch size
+  batch_size: 8    # batch size
   num_workers: 20   # number of workers for data loading
   num_splits: 10   # number of splits to consider for each dataset
   grid_search: true   # if True, grid search on the validation splits is used to find the best alpha value for the regression
@@ -88,5 +88,5 @@ logging:
   use_wandb: true   # if True, use wandb for logging
   wandb:
     online: true    # if True, log online to wandb
-    project: "test_arniqa"   # wandb project name
+    project: "ARNIQA Project"   # wandb project name
     entity: "sborchan"    # wandb entity name

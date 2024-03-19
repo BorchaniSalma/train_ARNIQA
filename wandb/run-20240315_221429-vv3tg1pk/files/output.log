@@ -1,0 +1,35 @@
+
+Saving checkpoints in folder:  /global/u2/s/salmab/ARNIQA/experiments/Debugging/pretrain
+Epoch [1/10]:   0%|                                                       | 0/938366 [00:00<?, ?it/s]
+Traceback (most recent call last):                                        | 0/938366 [00:00<?, ?it/s]
+  File "/global/u2/s/salmab/ARNIQA/main.py", line 129, in <module>
+    main()
+  File "/global/u2/s/salmab/ARNIQA/main.py", line 114, in main
+    train(args, model, train_dataloader, optimizer, lr_scheduler, scaler, logger, device)
+  File "/global/u2/s/salmab/ARNIQA/train.py", line 74, in train
+    for i, batch in enumerate(tqdm(train_dataloader)):
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/tqdm/std.py", line 1182, in __iter__
+    for obj in iterable:
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/torch/utils/data/dataloader.py", line 630, in __next__
+    data = self._next_data()
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/torch/utils/data/dataloader.py", line 1345, in _next_data
+    return self._process_data(data)
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/torch/utils/data/dataloader.py", line 1371, in _process_data
+    data.reraise()
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/torch/_utils.py", line 694, in reraise
+    raise exception
+RuntimeError: Caught RuntimeError in DataLoader worker process 0.
+Original Traceback (most recent call last):
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/torch/utils/data/_utils/worker.py", line 308, in _worker_loop
+    data = fetcher.fetch(index)
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/torch/utils/data/_utils/fetch.py", line 54, in fetch
+    return self.collate_fn(data)
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/torch/utils/data/_utils/collate.py", line 265, in default_collate
+    return collate(batch, collate_fn_map=default_collate_fn_map)
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/torch/utils/data/_utils/collate.py", line 127, in collate
+    return elem_type({key: collate([d[key] for d in batch], collate_fn_map=collate_fn_map) for key in elem})
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/torch/utils/data/_utils/collate.py", line 127, in <dictcomp>
+    return elem_type({key: collate([d[key] for d in batch], collate_fn_map=collate_fn_map) for key in elem})
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/torch/utils/data/_utils/collate.py", line 138, in collate
+    raise RuntimeError('each element in list of batch should be of equal size')
+RuntimeError: each element in list of batch should be of equal size

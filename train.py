@@ -12,7 +12,7 @@ from PIL import ImageFile
 from dotmap import DotMap
 from typing import Optional, Tuple
 
-from data import KADID10KDataset
+from data import DECAMDataset
 from test import get_results, synthetic_datasets, authentic_datasets
 from utils.visualization import visualize_tsne_umap_mos
 
@@ -75,12 +75,8 @@ def train(args: DotMap,
             num_logging_steps = i * args.training.batch_size + len(train_dataloader) * args.training.batch_size * epoch
 
             # Initialize inputs
-            inputs_A_orig = batch["img_A_orig"].to(device=device, non_blocking=True)
-            inputs_A_ds = batch["img_A_ds"].to(device=device, non_blocking=True)
-            inputs_A = torch.cat((inputs_A_orig, inputs_A_ds), dim=0)
-            inputs_B_orig = batch["img_B_orig"].to(device=device, non_blocking=True)
-            inputs_B_ds = batch["img_B_ds"].to(device=device, non_blocking=True)
-            inputs_B = torch.cat((inputs_B_orig, inputs_B_ds), dim=0)
+            inputs_A = batch["img_A_orig"].to(device=device, non_blocking=True)
+            inputs_B = batch["img_B_orig"].to(device=device, non_blocking=True)
             img_A_name = batch["img_A_name"]
             img_B_name = batch["img_B_name"]
 
@@ -147,7 +143,7 @@ def train(args: DotMap,
 
             # Log embeddings visualizations
             if args.validation.visualize and logger:
-                kadid10k_val = KADID10KDataset(args.data_base_path / "KADID10K", phase="val")
+                kadid10k_val = KADID10KDataset(args.data_base_path / "DECAM", phase="val")
                 val_dataloader = DataLoader(kadid10k_val, batch_size=args.test.batch_size, shuffle=False,
                                             num_workers=args.test.num_workers)
                 figures = visualize_tsne_umap_mos(model, val_dataloader,

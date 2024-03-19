@@ -1,0 +1,10 @@
+Epoch [1/10]:   0%|                                                       | 0/938366 [00:00<?, ?it/s]
+  0%|                                                                     | 0/938366 [00:00<?, ?it/s]
+Traceback (most recent call last):                                        | 0/938366 [00:00<?, ?it/s]
+  File "/global/u2/s/salmab/ARNIQA/main.py", line 129, in <module>
+    main()
+  File "/global/u2/s/salmab/ARNIQA/main.py", line 114, in main
+    train(args, model, train_dataloader, optimizer, lr_scheduler, scaler, logger, device)
+  File "/global/u2/s/salmab/ARNIQA/train.py", line 80, in train
+    inputs_A = torch.cat((inputs_A_orig, inputs_A_ds), dim=0)
+RuntimeError: Sizes of tensors must match except in dimension 0. Expected size 4094 but got size 1024 for tensor number 1 in the list.

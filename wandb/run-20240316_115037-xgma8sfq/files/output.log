@@ -1,0 +1,55 @@
+
+Saving checkpoints in folder:  /global/u2/s/salmab/ARNIQA/experiments/Train arniqa 1/pretrain
+Epoch [1/10]:   0%|                                                        | 0/47176 [00:00<?, ?it/s]
+Traceback (most recent call last):                                         | 0/47176 [00:00<?, ?it/s]
+  File "/global/u2/s/salmab/ARNIQA/main.py", line 129, in <module>
+    main()
+  File "/global/u2/s/salmab/ARNIQA/main.py", line 114, in main
+    train(args, model, train_dataloader, optimizer, lr_scheduler, scaler, logger, device)
+  File "/global/u2/s/salmab/ARNIQA/train.py", line 93, in train
+    loss = model(inputs_A, inputs_B)
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/global/u2/s/salmab/ARNIQA/models/simclr.py", line 39, in forward
+    q, proj_q = self.encoder(im_q)
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/global/u2/s/salmab/ARNIQA/models/resnet.py", line 42, in forward
+    f = self.model(x)
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/torch/nn/modules/container.py", line 215, in forward
+    input = module(input)
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/torch/nn/modules/container.py", line 215, in forward
+    input = module(input)
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/torchvision/models/resnet.py", line 158, in forward
+    identity = self.downsample(x)
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/torch/nn/modules/container.py", line 215, in forward
+    input = module(input)
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/torch/nn/modules/conv.py", line 460, in forward
+    return self._conv_forward(input, self.weight, self.bias)
+  File "/global/homes/s/salmab/.conda/envs/ARNIQA/lib/python3.10/site-packages/torch/nn/modules/conv.py", line 456, in _conv_forward
+    return F.conv2d(input, weight, bias, self.stride,
+torch.cuda.OutOfMemoryError: CUDA out of memory. Tried to allocate 512.00 MiB. GPU 0 has a total capacty of 39.39 GiB of which 169.12 MiB is free. Process 1057301 has 35.17 GiB memory in use. Including non-PyTorch memory, this process has 4.05 GiB memory in use. Of the allocated memory 3.39 GiB is allocated by PyTorch, and 144.95 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF

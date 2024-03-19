@@ -4,16 +4,27 @@ from typing import List, Callable, Union
 from PIL.Image import Image as PILImage
 
 from utils.distortions import *
+import matplotlib.pyplot as plt
+from astropy.visualization import ZScaleInterval, ImageNormalize
+from astropy.io import fits
+from photutils.background import SExtractorBackground, Background2D
+from astropy.stats import SigmaClip
 
 
 distortion_groups = {
     "blur": ["gaublur", "lensblur", "motionblur"],
-    "color_distortion": ["colordiff", "colorshift", "colorsat1", "colorsat2"],
-    "jpeg": ["jpeg2000", "jpeg"],
-    "noise": ["whitenoise", "whitenoiseCC", "impulsenoise", "multnoise"],
-    "brightness_change": ["brighten", "darken", "meanshift"],
-    "spatial_distortion": ["jitter", "noneccpatch", "pixelate", "quantization", "colorblock"],
-    "sharpness_contrast": ["highsharpen", "lincontrchange", "nonlincontrchange"],
+    "noise": ["whitenoise"],
+    "spatial_distortion": ["pixelate"],
+    "eccentricity": ["non_eccentricity_patch"],
+}
+
+distortion_functions = {
+    "gaublur": gaussian_blur,
+    "lensblur": lens_blur,
+    "motionblur": motion_blur,
+    "whitenoise": white_noise,
+    "non_eccentricity_patch": non_eccentricity_patch,
+    "pixelate": pixelate,
 }
 
 distortion_groups_mapping = {
@@ -61,7 +72,7 @@ distortion_range = {
     "darken": [0.05, 0.1, 0.2, 0.4, 0.8],
     "meanshift": [0, 0.08, -0.08, 0.15, -0.15],
     "jitter": [0.05, 0.1, 0.2, 0.5, 1],
-    "noneccpatch": [20, 40, 60, 80, 100],
+    "non_eccentricity_patch": [20, 40, 60, 80, 100],
     "pixelate": [0.01, 0.05, 0.1, 0.2, 0.5],
     "quantization": [20, 16, 13, 10, 7],
     "colorblock": [2, 4, 6, 8, 10],
@@ -70,33 +81,32 @@ distortion_range = {
     "nonlincontrchange": [0.4, 0.3, 0.2, 0.1, 0.05],
 }
 
-distortion_functions = {
-    "gaublur": gaussian_blur,
-    "lensblur": lens_blur,
-    "motionblur": motion_blur,
-    "colordiff": color_diffusion,
-    "colorshift": color_shift,
-    "colorsat1": color_saturation1,
-    "colorsat2": color_saturation2,
-    "jpeg2000": jpeg2000,
-    "jpeg": jpeg,
-    "whitenoise": white_noise,
-    "whitenoiseCC": white_noise_cc,
-    "impulsenoise": impulse_noise,
-    "multnoise": multiplicative_noise,
-    "brighten": brighten,
-    "darken": darken,
-    "meanshift": mean_shift,
-    "jitter": jitter,
-    "noneccpatch": non_eccentricity_patch,
-    "pixelate": pixelate,
-    "quantization": quantization,
-    "colorblock": color_block,
-    "highsharpen": high_sharpen,
-    "lincontrchange": linear_contrast_change,
-    "nonlincontrchange": non_linear_contrast_change,
-}
+li_distort_names = ['white_noise', 'gaussian_blur', 'motion_blur', 'pixelate', 'non_eccentricity_patch']
 
+    # Define distortion functions
+li_distort = [
+    lambda x, value: white_noise(x, value, False, False),
+    lambda x, value: gaussian_blur(x, value),
+    lambda x, value: motion_blur(x, value*5, np.random.rand(1)*360),
+    lambda x, value: pixelate(x, value*0.5),
+    lambda x, value: non_eccentricity_patch(x, int(value))]
+
+
+# Function to get the names of distortion functions
+def get_distortion_names(distort_functions, li_distort_names):
+    distortion_names = []
+    for distort_function in distort_functions:
+        # Check if the distort function is a lambda function
+        if isinstance(distort_function, type(lambda x: x)):
+            # Find the index of the lambda function in li_distort
+            index = li_distort.index(distort_function)
+            # Map the index to the corresponding name in li_distort_names
+            distortion_name = li_distort_names[index]
+            distortion_names.append(distortion_name)
+        else:
+            # If not a lambda function, use an empty string
+            distortion_names.append('')
+    return distortion_names
 
 def distort_images(image: torch.Tensor, distort_functions: list = None, distort_values: list = None,
                    max_distortions: int = 4, num_levels: int = 5) -> torch.Tensor:
@@ -117,7 +127,7 @@ def distort_images(image: torch.Tensor, distort_functions: list = None, distort_
         distort_values (list): list of the values of the distortion functions applied to the image
     """
     if distort_functions is None or distort_values is None:
-        distort_functions, distort_values = get_distortions_composition(max_distortions, num_levels)
+        distort_functions, distort_values = get_decam_distortions_composition(max_distortions, num_levels)
 
     for distortion, value in zip(distort_functions, distort_values):
         image = distortion(image, value)
@@ -158,19 +168,21 @@ def get_distortions_composition(max_distortions: int = 7, num_levels: int = 5) -
     return distort_functions, distort_values
 
 def get_decam_distortions_composition(max_distortions, num_levels):
-    # Define distortion functions
-    li_distort = [
-        lambda x: white_noise(x, np.random.rand(1)[0], False, False),
-        lambda x: gaussian_blur(x, np.random.rand(1)[0]),
-        lambda x: lens_blur(x, np.random.randint(1, 3)),
-        lambda x: motion_blur(x, np.random.rand(1)[0]*5, np.random.rand(1)*360),
-        lambda x: pixelate(x, np.random.rand(1)[0]*0.5),
-        lambda x: non_eccentricity_patch(x, np.random.randint(2, 5))
-    ]
+    """
+    Image Degradation model proposed in the paper https://arxiv.org/abs/2310.14918. Returns a randomly assembled ordered
+    sequence of distortion functions and their values.
 
+    Args:
+        max_distortions (int): maximum number of distortions to apply to the image
+        num_levels (int): number of levels of distortion that can be applied to the image
+
+    Returns:
+        distort_functions (list): list of the distortion functions to apply to the image
+        distort_values (list): list of the values of the distortion functions to apply to the image
+    """
+    distort_functions, distort_values = get_distortions_composition(max_distortions, num_levels)
     # Randomly select distortions
     selected_distortions = np.random.choice(li_distort, max_distortions, replace=False).tolist()
-
     # Randomly choose values for the selected distortions
     selected_values = [np.random.rand() for _ in range(max_distortions)]
 
@@ -179,8 +191,7 @@ def get_decam_distortions_composition(max_distortions, num_levels):
 def distort_decam_images(image: torch.Tensor, distort_functions: list = None, distort_values: list = None,
                    max_distortions: int = 4, num_levels: int = 5) -> torch.Tensor:
     """
-    Distorts an image using the distortion composition obtained with the image degradation model proposed in the paper
-    https://arxiv.org/abs/2310.14918.
+    Distorts an image using the distortion composition obtained with the image degradation model.
 
     Args:
         image (Tensor): image to distort
@@ -199,10 +210,50 @@ def distort_decam_images(image: torch.Tensor, distort_functions: list = None, di
 
     for distortion, value in zip(distort_functions, distort_values):
         image = distortion(image, value)
-        image = image.to(torch.float32)
-        image = torch.clip(image, 0, 1)
+
 
     return image, distort_functions, distort_values
+
+
+def plot_image(image: torch.Tensor, title: str = "Distorted Image"):
+    """
+    Plot the given image.
+
+    Args:
+        image (Tensor): image to plot
+        title (str): title of the plot
+    """
+    image = image.squeeze()
+
+    # Display the image with Z-scaled normalization
+    fig, axs = plt.subplots(figsize=(10, 8))
+    norm = ImageNormalize(image, interval=ZScaleInterval())
+    im = axs.imshow(image, cmap='gray', norm=norm)
+    axs.set_title(title)
+    fig.colorbar(im, ax=axs, label='Counts')
+    plt.show()
+
+def display_original_image(image_path, image_hdu):
+    fits_file_path = image_path
+    sigma_clip = SigmaClip(sigma=5.0)
+    sexbkg = SExtractorBackground(sigma_clip)
+    zscale_interval = ZScaleInterval()
+    print(image_path)
+    # Open the FITS file
+    hdul = fits.open(fits_file_path)
+    image_data = hdul[image_hdu].data
+
+    bkg = Background2D(image_data, (60, 60), filter_size=(3, 3), bkg_estimator=sexbkg)
+    image_data_subtracted = image_data - bkg.background
+
+    fig, axs = plt.subplots(figsize=(10, 8))
+    norm1 = ImageNormalize(image_data_subtracted, interval=zscale_interval)
+    im1 = axs.imshow(image_data_subtracted, cmap='gray', norm=norm1)
+    axs.set_title(f'Original Image - HDU {image_hdu}')
+    fig.colorbar(im1, ax=axs, label='Counts')
+    # Show the plot
+    plt.show()
+
 def resize_crop(img: PILImage, crop_size: int = 224, downscale_factor: int = 1) -> PILImage:
     """
     Resize the image with the desired downscale factor and optionally crop it to the desired size. The crop is randomly
